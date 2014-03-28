@@ -14,7 +14,6 @@ import twitter4j.IDs;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import twitter4j.User;
 import twitter4j.auth.AccessToken;
 
 public class TaskServlet extends HttpServlet {
@@ -48,26 +47,26 @@ public class TaskServlet extends HttpServlet {
 					newfollowerlist.add(id[i]);
 				}
 			}
-			
-			System.out.println(newfollowerlist.size());
-			
+						
 			ArrayList<Long> oldfollowerlist = new ArrayList<Long>(useraccount.getFollower_list());
 			
 			ArrayList<Long> intersection = new ArrayList<Long>(oldfollowerlist);
 			
 			intersection.removeAll(newfollowerlist);
-			
+						
 			for(int i = 0;i < intersection.size();i++){
-				long twitter_id = twitter.getId();
-				User user = twitter.showUser(intersection.get(i).longValue());
-				String screen_name = user.getScreenName();
-				twitter.sendDirectMessage(twitter_id,"@" + screen_name + " さんにリムーブされました");
+				try{
+					twitter.sendDirectMessage(twitter.getId(),"@" + twitter.showUser(intersection.get(i).longValue()).getScreenName() + " さんにリムーブされました");
+				} catch(TwitterException e) {
+				}
 			}
 						
 			useraccount.setFollower_list(newfollowerlist);
 			
 		} catch (TwitterException e) {
+			
 			throw new ServletException(e);
+			
 		} finally {
 			em.close();
 		}
