@@ -2,6 +2,7 @@ package jp.dip.jimanglaurant;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -18,12 +19,14 @@ import twitter4j.auth.AccessToken;
 
 public class TaskServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final Logger log = Logger.getLogger(TaskServlet.class.getName());
 
     public TaskServlet() {
         super();
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		long user_id = Long.parseLong(request.getParameter("user_id"));
 		EntityManager em = EMF.get().createEntityManager();
         Query query = em.createNamedQuery("getUserAccountByUserId");
@@ -56,8 +59,11 @@ public class TaskServlet extends HttpServlet {
 						
 			for(int i = 0;i < intersection.size();i++){
 				try{
-					twitter.sendDirectMessage(twitter.getId(),"@" + twitter.showUser(intersection.get(i).longValue()).getScreenName() + " さんにリムーブされました");
+					String str = "@" + twitter.showUser(intersection.get(i).longValue()).getScreenName() + " さんにリムーブされました";
+					twitter.sendDirectMessage(twitter.getId(),str);
+					log.info(twitter.getScreenName() + " : " + str);
 				} catch(TwitterException e) {
+					log.warning(twitter.getScreenName() + " :  user_id :  " + intersection.get(i).longValue() + "  " + e.getMessage());
 				}
 			}
 						
