@@ -3,6 +3,7 @@ package jp.dip.jimanglaurant;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -17,6 +18,7 @@ import twitter4j.auth.RequestToken;
 
 public class CallbackServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final Logger log = Logger.getLogger(CallbackServlet.class.getName());
        
     public CallbackServlet() {
         super();
@@ -47,7 +49,10 @@ public class CallbackServlet extends HttpServlet {
             }else{
             	useraccount = list.get(0);
             }
-        	request.getSession().setAttribute("useraccount", useraccount);
+            
+        	request.getSession().setAttribute("useraccount", useraccount);       	
+        	log.info(useraccount.getScreen_name()+"が登録されました");
+        	
         } catch (IllegalStateException | TwitterException e) {
 			e.printStackTrace();
 		} finally {
