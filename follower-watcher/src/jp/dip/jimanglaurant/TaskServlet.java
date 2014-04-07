@@ -32,6 +32,8 @@ public class TaskServlet extends HttpServlet {
         Query query = em.createNamedQuery("getUserAccountByUserId");
         query.setParameter("uid", user_id);
         UserAccount useraccount = (UserAccount)query.getResultList().get(0);
+        
+        log.info(useraccount.getScreen_name());
                 
         Twitter twitter = new TwitterFactory().getInstance();
         twitter.setOAuthAccessToken(new AccessToken(useraccount.getAccess_token(),useraccount.getAccess_token_secret()));
@@ -56,17 +58,41 @@ public class TaskServlet extends HttpServlet {
 			ArrayList<Long> intersection = new ArrayList<Long>(oldfollowerlist);
 			
 			intersection.removeAll(newfollowerlist);
+			
+			int count_403 = 0;
+			int count_404 = 0;
 						
 			for(int i = 0;i < intersection.size();i++){
 				try{
 					String str = "@" + twitter.showUser(intersection.get(i).longValue()).getScreenName() + " さんにリムーブされました";
 					twitter.sendDirectMessage(twitter.getId(),str);
-					log.info(twitter.getScreenName() + " : " + str);
+					log.info(str);
 				} catch(TwitterException e) {
-					log.warning(twitter.getScreenName() + " :  user_id :  " + intersection.get(i).longValue() + "  " + e.getMessage());
+					if(e.getErrorCode() == 403){
+						count_403 += 1;
+					}else if(e.getErrorCode() == 404){
+						count_404 += 1;
+					}
 				}
 			}
-						
+			
+			String str = "";
+			if(count_403 != 0){
+				if(count_404 != 0){
+					str = "フォロワーのうち、アカウントの凍結が" + count_403 + "件、アカウントの削除が" + count_404 + "件ありました";
+				}else{
+					str = "フォロワーのうち、アカウントの凍結が" + count_403 + "件ありました";
+				}
+			}else{
+				if(count_404 != 0){
+					str = "フォロワーのうち、アカウントの削除が" + count_404 + "件ありました";
+				}
+			}
+			if(!str.equals("")){
+				twitter.sendDirectMessage(twitter.getId(),str);
+				log.info(str);
+			}
+							
 			useraccount.setFollower_list(newfollowerlist);
 			
 		} catch (TwitterException e) {
