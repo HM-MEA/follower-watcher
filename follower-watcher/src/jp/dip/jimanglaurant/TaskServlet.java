@@ -66,14 +66,15 @@ public class TaskServlet extends HttpServlet {
 			for(int i = 0;i < intersection.size();i++){
 				try{
 					Relationship rs = twitter.showFriendship(intersection.get(i).longValue(), twitter.getId());
-					String str = "";
 					if(rs.isSourceBlockingTarget()){
-						str = "@" + twitter.showUser(intersection.get(i).longValue()).getScreenName() + " さんにブロックされました";
+						String str = "@" + twitter.showUser(intersection.get(i).longValue()).getScreenName() + " さんにブロックされました";
+						twitter.sendDirectMessage(twitter.getId(),str);
+						log.info(str);
 					}else if(!rs.isSourceFollowingTarget()){
-						str = "@" + twitter.showUser(intersection.get(i).longValue()).getScreenName() + " さんにリムーブされました";
+						String str = "@" + twitter.showUser(intersection.get(i).longValue()).getScreenName() + " さんにリムーブされました";
+						twitter.sendDirectMessage(twitter.getId(),str);
+						log.info(str);
 					}
-					twitter.sendDirectMessage(twitter.getId(),str);
-					log.info(str);
 				} catch(TwitterException e) {
 					if(e.getErrorCode() == 403){
 						count_403 += 1;
