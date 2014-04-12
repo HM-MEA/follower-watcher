@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import twitter4j.IDs;
+import twitter4j.Relationship;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -64,7 +65,13 @@ public class TaskServlet extends HttpServlet {
 						
 			for(int i = 0;i < intersection.size();i++){
 				try{
-					String str = "@" + twitter.showUser(intersection.get(i).longValue()).getScreenName() + " さんにリムーブされました";
+					Relationship rs = twitter.showFriendship(intersection.get(i).longValue(), twitter.getId());
+					String str = "";
+					if(rs.isSourceBlockingTarget()){
+						str = "@" + twitter.showUser(intersection.get(i).longValue()).getScreenName() + " さんにブロックされました";
+					}else if(!rs.isSourceFollowingTarget()){
+						str = "@" + twitter.showUser(intersection.get(i).longValue()).getScreenName() + " さんにリムーブされました";
+					}
 					twitter.sendDirectMessage(twitter.getId(),str);
 					log.info(str);
 				} catch(TwitterException e) {
