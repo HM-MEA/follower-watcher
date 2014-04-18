@@ -78,12 +78,12 @@ public class TaskServlet extends HttpServlet {
 						log.info(str);
 					}
 				} catch(TwitterException e) {
-					if(e.getErrorCode() == 403){
+					if(e.getStatusCode() == 403){
 						count_403 += 1;
-					}else if(e.getErrorCode() == 404){
+					}else if(e.getStatusCode() == 404){
 						count_404 += 1;
 					}else{
-						log.warning(e.getErrorMessage());
+						log.warning(e.getErrorCode() + " : " + e.getErrorCode() + " : " + e.getErrorMessage());
 					}
 				}
 			}
