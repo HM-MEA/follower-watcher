@@ -34,5 +34,7 @@ public class CronServlet extends HttpServlet {
 	        TaskOptions to = TaskOptions.Builder.withUrl("/task").param("user_id",String.valueOf(list.get(i).getUser_id()));
 	        queue.add(to);
 		}
+		
+		em.close();
 	}
 }
