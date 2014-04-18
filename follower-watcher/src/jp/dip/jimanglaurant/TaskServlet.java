@@ -86,7 +86,7 @@ public class TaskServlet extends HttpServlet {
 				}
 			}
 			
-			String str = null;
+			String str = "null";
 			if(count_403 != 0){
 				if(count_404 != 0){
 					str = "フォロワーのうち、アカウントの凍結が" + count_403 + "件、アカウントの削除が" + count_404 + "件ありました";
@@ -98,7 +98,7 @@ public class TaskServlet extends HttpServlet {
 					str = "フォロワーのうち、アカウントの削除が" + count_404 + "件ありました";
 				}
 			}
-			if(!str.equals(null)){
+			if(!str.equals("null")){
 				twitter.sendDirectMessage(twitter.getId(),str);
 				log.info(str);
 			}
