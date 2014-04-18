@@ -46,12 +46,17 @@ public class CallbackServlet extends HttpServlet {
             if(list.size() == 0){
             	useraccount = new UserAccount(twitter.getId(),twitter.getScreenName(),twitter.getOAuthAccessToken().getToken(),twitter.getOAuthAccessToken().getTokenSecret(),new ArrayList<Long>());
             	em.persist(useraccount);
+            	log.info(useraccount.getScreen_name()+"が登録されました");
             }else{
             	useraccount = list.get(0);
+            	useraccount.setUser_id(twitter.getId());
+            	useraccount.setScreen_name(twitter.getScreenName());
+            	useraccount.setAccess_token(twitter.getOAuthAccessToken().getToken());
+            	useraccount.setAccess_token_secret(twitter.getOAuthAccessToken().getTokenSecret());
+            	em.merge(useraccount);
             }
             
         	request.getSession().setAttribute("useraccount", useraccount);       	
-        	log.info(useraccount.getScreen_name()+"が登録されました");
         	
         } catch (IllegalStateException | TwitterException e) {
 			e.printStackTrace();
