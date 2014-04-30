@@ -83,7 +83,7 @@ public class TaskServlet extends HttpServlet {
 					}else if(e.getStatusCode() == 404){
 						count_404 += 1;
 					}else{
-						log.warning(e.getErrorCode() + " : " + e.getErrorCode() + " : " + e.getErrorMessage());
+						throw new ServletException(e);
 					}
 				}
 			}
@@ -107,10 +107,8 @@ public class TaskServlet extends HttpServlet {
 							
 			useraccount.setFollower_list(newfollowerlist);
 			
-		} catch (TwitterException e) {
-			
+		} catch (Exception e) {		
 			throw new ServletException(e);
-			
 		} finally {
 			em.close();
 		}
